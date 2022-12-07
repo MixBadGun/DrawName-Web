@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">
+<script type="text/javascript" src="https://cdn.staticfile.org/jquery/3.6.0/jquery.min.js"></script>
+<link rel="icon" href="./favicon.ico" type="image/x-icon">
+<link href="https://cdn.staticfile.org/mdui/1.0.2/css/mdui.min.css" rel="stylesheet">
+<script src="https://cdn.staticfile.org/mdui/1.0.2/js/mdui.min.js"></script>
+<script src="https://cdn.staticfile.org/xlsx/0.18.3/xlsx.full.min.js"></script>
+<script type="text/javascript" src="main.js"></script>
+<script type="text/javascript" src="export_txt.js"></script>
+<!-- Matomo -->
+<script>
+    var _paq = window._paq = window._paq || [];
+    /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+    _paq.push(['trackPageView']);
+    _paq.push(['enableLinkTracking']);
+    (function() {
+      var u="//dash.otm.ink/";
+      _paq.push(['setTrackerUrl', u+'matomo.php']);
+      _paq.push(['setSiteId', '3']);
+      var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+      g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+    })();
+</script>
+<!-- End Matomo Code -->
+<style>
+html, body { height: 100%; }
+body{
+    margin:0;
+    font-family: 'HarmonyOS Sans SC', 'Source Han Sans SC';
+}
+.loading{
+    display: flex;
+    position: absolute;
+    flex-direction: column;
+    justify-content: center;
+    align-content: space-around;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(20px);
+    z-index: 100;
+}
+.loading-out{
+    display: flex;
+    position: absolute;
+    flex-direction: column;
+    justify-content: center;
+    align-content: space-around;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(20px);
+    opacity: 1;
+    animation: loading-over 0.5s;
+    animation-fill-mode:forwards;
+}
+@keyframes loading-over{
+    from{
+        opacity: 1;
+        backdrop-filter: blur(20px);
+    }
+    to{
+        opacity: 0;
+        backdrop-filter: blur(0px);
+    }
+}
+.loading-circle{
+    margin: 0 auto;
+    width: 75px;
+    height: 75px;
+    padding: 20px;
+}
+.loading-text{
+    text-align: center;
+    width: 100%;
+    height: fit-content;
+    font-size: 25px;
+    font-weight: 600;
+}
+.outbox{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 1024px;
+    height: 100%;
+    margin: auto;
+}
+.background{
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: url("https://api.miaomc.cn/image/get");
+    filter:brightness(0.5);
+    background-color: #66ccff;
+    background-size: cover;
+    background-position: center;
+    z-index: -2;
+}
+.logo-box{
+    display: flex;
+    width: 100%;
+    height: 100px;
+}
+.logo{
+    margin: auto;
+    height: 100%;
+}
+.show-box{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 1em;
+    transition: all 1s;
+    height: 125px;
+    align-items: center;
+}
+.show-item{
+    display: flex;
+    width: 125px;
+    height: 125px;
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    transition: all 1s;
+    box-shadow: 0 10px 12px 1px rgb(0 0 0 / 10%);
+    margin: 8px;
+}
+.inner-text{
+    width: fit-content;
+    height: fit-content;
+    font-size: 85px;
+    font-weight: 900;
+    transition: all 1s;
+    margin: auto;
+    animation:item-shake 0.1s cubic-bezier(0.175, 0.885, 0.320, 1.275);
+}
+.inner-big-text{
+    width: fit-content;
+    height: fit-content;
+    font-size: 125px;
+    font-weight: 900;
+    transition: all 1s;
+    margin: auto;
+    animation:item-shake 0.1s cubic-bezier(0.175, 0.885, 0.320, 1.275);
+}
+.button-box{
+    display: flex;
+    justify-content: space-around;
+    align-content: space-around;
+    width: 100%;
+    min-height: 100px;
+    height: 100px;
+    margin-top: auto;
+}
+.button{
+    border: none;
+    border-radius: 5px;
+    box-shadow: 0 10px 12px 1px rgb(0 0 0 / 10%);
+    height: 50px;
+    font-size: 25px;
+    font-weight: 800;
+    padding: 5px 20px;
+    transition: 0.25s cubic-bezier(0.075, 0.82, 0.165, 1);
+    margin: auto;
+    outline: none;
+}
+.button:hover{
+    transform: scale(1.05);
+}
+.button:active{
+    transform: scale(0.95);
+}
+input{
+    position: absolute;
+    top:0;
+    left:0;
+    font-size: 100px;
+    opacity: 0;
+}
+.info-box{
+    height:100%;
+    overflow-y: scroll;
+    position: relative;
+    transition: all 1s;
+}
+@keyframes info-out{
+    from{
+        flex-grow: 1;
+    }
+    to{
+        flex-grow: 0;
+    }
+}
+ul{
+    line-height: 2em;
+    padding: 0 25px;
+}
+li{
+    list-style-type:none;
+    display:flex;
+    margin: 8px auto;
+    max-width: 500px;
+    padding: 5px;
+    color: black;
+    font-size: 20px;
+    text-align: center;
+    animation: come-li 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 12px 1px rgb(0 0 0 / 10%);
+}
+@keyframes come-li{
+    from{
+        transform: scale(0);
+    }
+    to{
+        transform: scale(1);
+    }
+}
+@keyframes item-shake{
+    from{
+        transform: translateY(20px);
+    }
+    to{
+        transform: translateX(0px);
+    }
+}
+.rolling{
+    width: 100%;
+}
+.info-box::-webkit-scrollbar {
+    width: 4px;
+}
+.info-box::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    background: rgba(0, 0, 0, 0.4)
+}
+.info-box::-webkit-scrollbar-track {
+    border-radius: 10px;
+    background: none;
+}
+.mdui-spinner{
+    width: 100%;
+    height: 100%;
+}
+.shining{
+    position: absolute;
+    left: 0;
+    background-color: white;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    animation: shining 1s;
+    animation-fill-mode:forwards;
+}
+@keyframes shining{
+    from{
+        opacity: 0.4;
+    }
+    to{
+        opacity: 0;
+    }
+}
+.exit-button{
+    right: 10px;
+    top: 10px;
+    background-color: #ff4081;
+    position: absolute;
+}
+.exit-button:hover{
+    background-color: #ff689b;
+}
+.visible-button{
+    right: 10px;
+    top: 60px;
+    background-color: #ffffff;
+    position: absolute;
+}
+.visible-button:hover{
+    background-color: #ffffff;
+}
+.help-button{
+    left: 10px;
+    top: 10px;
+    background-color: #ff4081;
+    position: absolute;
+}
+.help-button:hover{
+    background-color: #ff689b;
+}
+.help-box{
+    padding: 0 20px;
+    background: white;
+    box-shadow: 0 10px 12px 1px rgb(0 0 0 / 10%);
+    height: 100%;
+    line-height: 1.5em;
+}
+.hiding-bar{
+    background: #ff4081;
+}
+.hiding-bar:hover{
+    background-color: #ff689b;
+}
+.out-hiding{
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-items: center;
+    width: 100%;
+    z-index: 10;
+}
+.drop-icon{
+    color: white;
+}
+.side-button{
+    transform:scale(1);
+}
+.times {
+    font-weight: bolder;
+    background: #FB7299;
+    min-width: 30px;
+    height: 30px;
+    border-radius: 5px;
+    color: white;
+}
+.name {
+    flex: 1;
+}
+</style>
+<meta charset="utf-8">
+<title>坏枪随机器 5.10</title>
+</head>
+<body>
+<div id="loading" class="loading">
+    <div class="loading-circle">
+        <div class="mdui-spinner"></div>
+    </div>
+    <div class="loading-text">
+        加载中
+    </div>
+</div>
+    <div id="outbox" class="outbox">
+        <div class="mdui-dialog" id="help-box">
+            <div class="help-box">
+                <h1>欢迎使用 坏枪随机器！</h1>
+                <h2>网站介绍</h2>
+                <p>坏枪随机器 是可以进行随机抽取元素的软件，最初由 Python 编写，现重写为 HTML 版。</p>
+                <p>在这里，你只需要将含有抽取元素的 xls 或 xlsx 文件点击底下的“上传”按钮进行上传，即可导入自定义抽取列表。</p>
+                <p>目前对空白单元格已经进行了过滤。</p>
+                <p>在你使用完毕后，若想要导出抽取结果，可以点击“导出”按钮。你将得到一份 txt 文件。</p>
+                <h2>图片来源</h2>
+                <p>此版本的随机器背景来自 <a href="https://api.miaomc.cn/image">MIAOMC API</a> 的随机图片。</p>
+                <h2>音效来源</h2>
+                <p>此版本的随机器音效由坏枪本人制作。</p>
+                <h2>Cookie 使用</h2>
+                <p>您在上传表格文件时，为了便于第二次打开保留上一次的抽取元素，我们会将您的元素列表存储为 Cookie，如果不清除则永久不过期。</p>
+            </div>
+        </div>
+        <button class="mdui-fab mdui-fab-mini mdui-ripple exit-button" onclick="custom_close()"><i style="color:white;" class="mdui-icon material-icons">&#xe879;</i></button>
+        <button class="mdui-fab mdui-fab-mini mdui-ripple help-button" mdui-dialog="{target: '#help-box'}"><i style="color:white;" class="mdui-icon material-icons">&#xe8fd;</i></button>
+        <button id="hide_button" class="mdui-fab mdui-fab-mini mdui-ripple visible-button" onclick="hide_info()"><i id="hide_inner" class="mdui-icon material-icons" style="color:black;">&#xe8f4;</i></button>
+        <div class="logo-box">
+            <img class="logo" src="image/logo.png">
+        </div>
+        <div id="show-box" class="show-box">
+        </div>
+        <div id="info-out" class="info-box">
+            <ul id="info-box">
+            </ul>
+        </div>
+        <div class="button-box">
+            <button class="mdui-ripple button side-button"><input type="file" onchange="excel(this)" accept=".xls,.xlsx"/>上传</button>
+            <button style="font-size: 30px;background-color: #FF6666;color: white;" class="mdui-ripple mdui-ripple-white button" onclick="start_random();">抽取</button>
+            <button class="mdui-ripple button side-button" onclick="export_txt();">导出</button>
+        </div>
+    </div>
+    <div class="background"></div>
+</body>
+</html>
