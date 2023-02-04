@@ -96,7 +96,8 @@ function split_name(name) {
     return temp_namelist;}
 //划分区域
 function section(data){
-    max=0;
+    let max = 0;
+    namelist = [];
     for(y in data){
         item = data[y];
         num = item.length;
