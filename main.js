@@ -45,6 +45,7 @@ function preload_sounds() {
         sounds[i].src = preload_sounds.arguments[i]}}
 preload(
             "image/chose.webp",
+            "image/chose_white.webp",
             "image/logo.png"
                 )
 preload_sounds(
@@ -153,9 +154,8 @@ function start_random(){
         chose2_audio.load();
         total_times ++;
     for(var i=0; i<splitnum; i++){
-        gif = document.createElement("img");
+        gif = document.createElement("div");
         gif.className = "rolling";
-        gif.src="image/chose.webp";
         box.children[i].innerHTML='';
         box.children[i].appendChild(gif);
     };

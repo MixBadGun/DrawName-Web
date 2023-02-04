@@ -1,0 +1,34 @@
+:root {
+    --root-back: #FFFFFF;
+    --text: #000000;
+    --loading: rgba(255, 255, 255, 0.5);
+    --block-back: rgba(255, 255, 255, 0.8);
+    --button-back: #FFFFFF;
+    --button-back-hover: #FFFFFF;
+    --box-back: rgba(255, 255, 255, 0.8);
+    --times-back: #FB7299;
+    --times-text: #FFFFFF;
+    --icon-color: #000000;
+    --border-color: rgba(255, 255, 255, 0.6);
+    --chose-image: url("./image/chose.webp");
+    --brightness: brightness(1);
+    --shining: #FFFFFF;
+}
+@media(prefers-color-scheme:dark) {
+    :root {
+        --root-back: #000000;
+        --text: #FFFFFF;
+        --loading: rgba(0, 0, 0, 0.5);
+        --block-back: rgba(0, 0, 0, 0.8);
+        --button-back: #000000;
+        --button-back-hover: #202020;
+        --box-back: rgba(0, 0, 0, 0.8);
+        --times-back: #FFFFFF;
+        --times-text: #000000;
+        --icon-color: #FFFFFF;
+        --border-color: rgba(255, 255, 255, 0.2);
+        --chose-image: url("./image/chose_white.webp");
+        --brightness: brightness(0.5);
+        --shining: #000000;
+    }
+}

@@ -5,6 +5,7 @@
 <script type="text/javascript" src="https://cdn.staticfile.org/jquery/3.6.0/jquery.min.js"></script>
 <link rel="icon" href="./favicon.ico" type="image/x-icon">
 <link href="https://cdn.staticfile.org/mdui/1.0.2/css/mdui.min.css" rel="stylesheet">
+<link href="./css/color.css" rel="stylesheet">
 <script src="https://cdn.staticfile.org/mdui/1.0.2/js/mdui.min.js"></script>
 <script src="https://cdn.staticfile.org/xlsx/0.18.3/xlsx.full.min.js"></script>
 <script type="text/javascript" src="present/present.js"></script>
@@ -13,6 +14,7 @@
 <style>
 html, body { height: 100%; }
 body{
+    color: var(--text);
     margin:0;
     font-family: 'HarmonyOS Sans SC', 'Source Han Sans SC';
 }
@@ -24,7 +26,7 @@ body{
     align-content: space-around;
     width: 100%;
     height: 100%;
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: var(--loading);
     backdrop-filter: blur(20px);
     z-index: 100;
 }
@@ -36,7 +38,7 @@ body{
     align-content: space-around;
     width: 100%;
     height: 100%;
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: var(--loading);
     backdrop-filter: blur(20px);
     opacity: 1;
     animation: loading-over 0.5s;
@@ -78,8 +80,8 @@ body{
     top: 0;
     width: 100%;
     height: 100%;
-    filter:brightness(0.5);
-    background-color: #66ccff;
+    filter:var(--brightness);
+    background-color: var(--root-back);
     background-size: cover;
     background-position: center;
     z-index: -2;
@@ -108,7 +110,7 @@ body{
     margin-bottom: 1em;
     transition: all 1s;
     align-items: center;
-    min-height: 150px;
+    min-height: 160px;
     overflow-x: scroll;
 }
 .show-item{
@@ -116,11 +118,12 @@ body{
     width: 125px;
     height: 125px;
     border-radius: 10px;
-    background-color: rgba(255, 255, 255, 0.8);
+    background-color: var(--block-back);
     backdrop-filter: blur(10px);
     transition: all 1s;
     box-shadow: 0 10px 12px 1px rgb(0 0 0 / 10%);
     margin: 0 8px;
+    border: solid 1px var(--border-color);
 }
 .inner-text{
     width: fit-content;
@@ -152,6 +155,9 @@ body{
     border: none;
     border-radius: 5px;
     box-shadow: 0 10px 12px 1px rgb(0 0 0 / 10%);
+    background-color: var(--block-back);
+    backdrop-filter: blur(10px);
+    color: var(--text);
     height: 50px;
     font-size: 25px;
     font-weight: 800;
@@ -198,12 +204,12 @@ body{
     margin: 8px auto;
     max-width: 500px;
     padding: 5px;
-    color: black;
+    color: var(--text);
     font-size: 20px;
     text-align: center;
     animation: come-li 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
     border-radius: 5px;
-    background-color: rgba(255, 255, 255, 0.8);
+    background-color: var(--block-back);
     backdrop-filter: blur(10px);
     box-shadow: 0 10px 12px 1px rgb(0 0 0 / 10%);
 }
@@ -225,6 +231,9 @@ body{
 }
 .rolling{
     width: 100%;
+    background-image: var(--chose-image);
+    background-position: center;
+    background-size: cover;
 }
 .info-box::-webkit-scrollbar {
     width: 4px;
@@ -240,16 +249,6 @@ body{
 .mdui-spinner{
     width: 100%;
     height: 100%;
-}
-.shining{
-    position: absolute;
-    left: 0;
-    background-color: white;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    animation: shining 1s;
-    animation-fill-mode:forwards;
 }
 @keyframes shining{
     from{
@@ -271,11 +270,11 @@ body{
 .visible-button{
     right: 10px;
     top: 60px;
-    background-color: #ffffff;
+    background-color: var(--button-back);
     position: absolute;
 }
 .visible-button:hover{
-    background-color: #ffffff;
+    background-color: var(--button-back-hover);
 }
 .help-button{
     left: 10px;
@@ -296,33 +295,33 @@ body{
 .pres-button{
     left: 10px;
     top: 60px;
-    background-color: #ffffff;
+    background-color: var(--button-back);
     position: absolute;
 }
 .pres-button:hover{
-    background-color: #ffffff;
+    background-color: var(--button-back-hover);
 }
 .norepeat-button{
     right: 10px;
     top: 110px;
-    background-color: #ffffff;
+    background-color: var(--button-back);
     position: absolute;
 }
 .norepeat-button:hover{
-    background-color: #ffffff;
+    background-color: var(--button-back-hover);
 }
 .help-box{
     padding: 0 20px;
-    background: white;
+    background-color: var(--box-back)!important;
+    backdrop-filter: blur(10px);
     box-shadow: 0 10px 12px 1px rgb(0 0 0 / 10%);
-    height: 100%;
     line-height: 1.5em;
 }
 .pres-box{
     padding: 0 20px;
-    background: white;
+    background-color: var(--box-back)!important;
+    backdrop-filter: blur(10px);
     box-shadow: 0 10px 12px 1px rgb(0 0 0 / 10%);
-    height: 100%;
     line-height: 1.5em;
 }
 .hiding-bar{
@@ -339,19 +338,16 @@ body{
     width: 100%;
     z-index: 10;
 }
-.drop-icon{
-    color: white;
-}
 .side-button{
     transform:scale(1);
 }
 .times {
     font-weight: bolder;
-    background: #FB7299;
+    background: var(--times-back);
     min-width: 30px;
     height: 30px;
     border-radius: 5px;
-    color: white;
+    color: var(--times-text);
 }
 .name {
     flex: 1;
@@ -369,11 +365,29 @@ body{
 .pres-name {
     margin-left: 10px;
 }
+.shining{
+    position: absolute;
+    left: 0;
+    background-color: var(--shining);
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    animation: shining 1s;
+    animation-fill-mode:forwards;
+}
+@keyframes shining{
+    from{
+        opacity: 0.4;
+    }
+    to{
+        opacity: 0;
+    }
+}
 </style>
 <meta charset="utf-8">
-<title>坏枪随机器 5.12</title>
+<title>坏枪随机器 5.13</title>
 </head>
-<body>
+<body class="mdui-theme-layout-auto">
 <div id="loading" class="loading">
     <div class="loading-circle">
         <div class="mdui-spinner"></div>
@@ -383,56 +397,52 @@ body{
     </div>
 </div>
     <div id="outbox" class="outbox">
-        <div class="mdui-dialog" id="help-box">
-            <div class="help-box">
-                <h1>欢迎使用 坏枪随机器！</h1>
-                <h2>网站介绍</h2>
-                <p>坏枪随机器 是可以进行随机抽取元素的软件，最初由 Python 编写，现重写为 HTML 版。</p>
-                <p>在这里，你只需要将含有抽取元素的 xls 或 xlsx 文件点击底下的“上传”按钮进行上传，即可导入自定义抽取列表。</p>
-                <p>目前对空白单元格已经进行了过滤。</p>
-                <p>在你使用完毕后，若想要导出抽取结果，可以点击“导出”按钮。你将得到一份 txt 文件。</p>
-                <h2>图片来源</h2>
-                <p>此版本的随机器背景来自 <a href="https://t.lizina.top/">t.lizina.top</a> 的随机图片。</p>
-                <h2>音效来源</h2>
-                <p>此版本的随机器音效由坏枪本人制作。</p>
-                <h2>Cookie 使用</h2>
-                <p>您在上传表格文件时，为了便于第二次打开保留上一次的抽取元素，我们会将您的元素列表存储为 Cookie，如果不清除则永久不过期。</p>
-            </div>
+        <div class="mdui-dialog help-box" id="help-box">
+            <h1>欢迎使用 坏枪随机器！</h1>
+            <h2>网站介绍</h2>
+            <p>坏枪随机器 是可以进行随机抽取元素的软件，最初由 Python 编写，现重写为 HTML 版。</p>
+            <p>在这里，你只需要将含有抽取元素的 xls 或 xlsx 文件点击底下的“上传”按钮进行上传，即可导入自定义抽取列表。</p>
+            <p>目前对空白单元格已经进行了过滤。</p>
+            <p>在你使用完毕后，若想要导出抽取结果，可以点击“导出”按钮。你将得到一份 txt 文件。</p>
+            <h2>图片来源</h2>
+            <p>此版本的随机器背景来自 <a href="https://t.lizina.top/">t.lizina.top</a> 的随机图片。</p>
+            <h2>音效来源</h2>
+            <p>此版本的随机器音效由坏枪本人制作。</p>
+            <h2>Cookie 使用</h2>
+            <p>您在上传表格文件时，为了便于第二次打开保留上一次的抽取元素，我们会将您的元素列表存储为 Cookie，如果不清除则永久不过期。</p>
         </div>
-        <div class="mdui-dialog" id="pres-box">
-            <div class="pres-box">
-                <h2>预设</h2>
-                <ul class="mdui-list pres-list" id="presents">
-                </ul>
-                <h2>自定义数字</h2>
-                <form name="num_form" onsubmit="return false;">
-                    <div class="num-form">
-                        <div class="mdui-textfield mdui-textfield-floating-label">
-                            <label class="mdui-textfield-label">数字</label>
-                            <input name="num_1" class="mdui-textfield-input" type="number" required/>
-                        </div>
-                        <span style="margin:10px"> - </span>
-                        <div class="mdui-textfield mdui-textfield-floating-label">
-                            <label class="mdui-textfield-label">数字</label>
-                            <input name="num_2" class="mdui-textfield-input" type="number" required/>
-                        </div>
-                        <div>
-                            <button type="button" class="mdui-fab mdui-fab-mini mdui-ripple add-button" onclick="custom_num()"><i style="color:white;" class="mdui-icon material-icons">&#xe145;</i></button>
-                        </div>
-                    </div>
+        <div class="mdui-dialog pres-box" id="pres-box">
+            <h2>预设</h2>
+            <ul class="mdui-list pres-list" id="presents">
+            </ul>
+            <h2>自定义数字</h2>
+            <form name="num_form" onsubmit="return false;">
+                <div class="num-form">
                     <div class="mdui-textfield mdui-textfield-floating-label">
-                        <label class="mdui-textfield-label">步长</label>
-                        <input name="num_3" class="mdui-textfield-input" type="number" required/>
-                        <div class="mdui-textfield-helper">步长的精度决定抽取的精度，请准确填写小数位数。</div>
+                        <label class="mdui-textfield-label">数字</label>
+                        <input name="num_1" class="mdui-textfield-input" type="number" required/>
                     </div>
-                </form>
-            </div>
+                    <span style="margin:10px"> - </span>
+                    <div class="mdui-textfield mdui-textfield-floating-label">
+                        <label class="mdui-textfield-label">数字</label>
+                        <input name="num_2" class="mdui-textfield-input" type="number" required/>
+                    </div>
+                    <div>
+                        <button type="button" class="mdui-fab mdui-fab-mini mdui-ripple add-button" onclick="custom_num()"><i style="color:white;" class="mdui-icon material-icons">&#xe145;</i></button>
+                    </div>
+                </div>
+                <div class="mdui-textfield mdui-textfield-floating-label">
+                    <label class="mdui-textfield-label">步长</label>
+                    <input name="num_3" class="mdui-textfield-input" type="number" required/>
+                    <div class="mdui-textfield-helper">步长的精度决定抽取的精度，请准确填写小数位数。</div>
+                </div>
+            </form>
         </div>
         <button type="button" class="mdui-fab mdui-fab-mini mdui-ripple exit-button" onclick="custom_close()"><i style="color:white;" class="mdui-icon material-icons">&#xe879;</i></button>
         <button type="button" class="mdui-fab mdui-fab-mini mdui-ripple help-button" mdui-dialog="{target: '#help-box'}"><i style="color:white;" class="mdui-icon material-icons">&#xe8fd;</i></button>
-        <button type="button" class="mdui-fab mdui-fab-mini mdui-ripple pres-button" mdui-dialog="{target: '#pres-box'}"><i style="color:black;" class="mdui-icon material-icons">&#xe8f6;</i></button>
-        <button type="button" class="mdui-fab mdui-fab-mini mdui-ripple norepeat-button" onclick="ifnorepeat()"><i style="color:black;" class="mdui-icon material-icons">&#xe040;</i></button>
-        <button type="button" id="hide_button" class="mdui-fab mdui-fab-mini mdui-ripple visible-button" onclick="hide_info()"><i id="hide_inner" class="mdui-icon material-icons" style="color:black;">&#xe8f4;</i></button>
+        <button type="button" class="mdui-fab mdui-fab-mini mdui-ripple pres-button" mdui-dialog="{target: '#pres-box'}"><i style="color:var(--icon-color);" class="mdui-icon material-icons">&#xe8f6;</i></button>
+        <button type="button" class="mdui-fab mdui-fab-mini mdui-ripple norepeat-button" onclick="ifnorepeat()"><i style="color:var(--icon-color);" class="mdui-icon material-icons">&#xe040;</i></button>
+        <button type="button" id="hide_button" class="mdui-fab mdui-fab-mini mdui-ripple visible-button" onclick="hide_info()"><i id="hide_inner" class="mdui-icon material-icons" style="color:var(--icon-color);">&#xe8f4;</i></button>
         <div class="logo-box">
             <img class="logo" src="image/logo.png">
         </div>
