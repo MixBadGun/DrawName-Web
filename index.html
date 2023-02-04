@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh">
 <head>
 <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">
 <script type="text/javascript" src="https://cdn.staticfile.org/jquery/3.6.0/jquery.min.js"></script>
@@ -7,23 +7,9 @@
 <link href="https://cdn.staticfile.org/mdui/1.0.2/css/mdui.min.css" rel="stylesheet">
 <script src="https://cdn.staticfile.org/mdui/1.0.2/js/mdui.min.js"></script>
 <script src="https://cdn.staticfile.org/xlsx/0.18.3/xlsx.full.min.js"></script>
+<script type="text/javascript" src="present/present.js"></script>
 <script type="text/javascript" src="main.js"></script>
 <script type="text/javascript" src="export_txt.js"></script>
-<!-- Matomo -->
-<script>
-    var _paq = window._paq = window._paq || [];
-    /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
-    _paq.push(['trackPageView']);
-    _paq.push(['enableLinkTracking']);
-    (function() {
-      var u="//dash.otm.ink/";
-      _paq.push(['setTrackerUrl', u+'matomo.php']);
-      _paq.push(['setSiteId', '3']);
-      var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-      g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
-    })();
-</script>
-<!-- End Matomo Code -->
 <style>
 html, body { height: 100%; }
 body{
@@ -92,12 +78,19 @@ body{
     top: 0;
     width: 100%;
     height: 100%;
-    background: url("https://api.miaomc.cn/image/get");
     filter:brightness(0.5);
     background-color: #66ccff;
     background-size: cover;
     background-position: center;
     z-index: -2;
+}
+.background-img {
+    background-image: url("https://t.lizina.top/pc");
+}
+@media all and (orientation : portrait){
+    .background-img {
+        background-image: url("https://t.lizina.top/mp");
+    }
 }
 .logo-box{
     display: flex;
@@ -114,8 +107,9 @@ body{
     width: 100%;
     margin-bottom: 1em;
     transition: all 1s;
-    height: 125px;
     align-items: center;
+    min-height: 130px;
+    overflow-x: scroll;
 }
 .show-item{
     display: flex;
@@ -126,7 +120,7 @@ body{
     backdrop-filter: blur(10px);
     transition: all 1s;
     box-shadow: 0 10px 12px 1px rgb(0 0 0 / 10%);
-    margin: 8px;
+    margin: 0 8px;
 }
 .inner-text{
     width: fit-content;
@@ -148,8 +142,7 @@ body{
 }
 .button-box{
     display: flex;
-    justify-content: space-around;
-    align-content: space-around;
+    justify-content: center;
     width: 100%;
     min-height: 100px;
     height: 100px;
@@ -164,8 +157,9 @@ body{
     font-weight: 800;
     padding: 5px 20px;
     transition: 0.25s cubic-bezier(0.075, 0.82, 0.165, 1);
-    margin: auto;
+    margin: auto 20px;
     outline: none;
+    white-space: nowrap;
 }
 .button:hover{
     transform: scale(1.05);
@@ -173,7 +167,7 @@ body{
 .button:active{
     transform: scale(0.95);
 }
-input{
+.hidden-input{
     position: absolute;
     top:0;
     left:0;
@@ -194,11 +188,11 @@ input{
         flex-grow: 0;
     }
 }
-ul{
+.info-box ul{
     line-height: 2em;
     padding: 0 25px;
 }
-li{
+.info-box li{
     list-style-type:none;
     display:flex;
     margin: 8px auto;
@@ -292,7 +286,39 @@ li{
 .help-button:hover{
     background-color: #ff689b;
 }
+.add-button{
+    display: inline-block;
+    background-color: #ff4081;
+}
+.add-button:hover{
+    background-color: #ff689b;
+}
+.pres-button{
+    left: 10px;
+    top: 60px;
+    background-color: #ffffff;
+    position: absolute;
+}
+.pres-button:hover{
+    background-color: #ffffff;
+}
+.norepeat-button{
+    right: 10px;
+    top: 110px;
+    background-color: #ffffff;
+    position: absolute;
+}
+.norepeat-button:hover{
+    background-color: #ffffff;
+}
 .help-box{
+    padding: 0 20px;
+    background: white;
+    box-shadow: 0 10px 12px 1px rgb(0 0 0 / 10%);
+    height: 100%;
+    line-height: 1.5em;
+}
+.pres-box{
     padding: 0 20px;
     background: white;
     box-shadow: 0 10px 12px 1px rgb(0 0 0 / 10%);
@@ -330,9 +356,22 @@ li{
 .name {
     flex: 1;
 }
+.num-form {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+}
+.pres-list {
+    max-height: 400px;
+    overflow-y: scroll;
+}
+.pres-name {
+    margin-left: 10px;
+}
 </style>
 <meta charset="utf-8">
-<title>坏枪随机器 5.10</title>
+<title>坏枪随机器 5.12</title>
 </head>
 <body>
 <div id="loading" class="loading">
@@ -353,16 +392,47 @@ li{
                 <p>目前对空白单元格已经进行了过滤。</p>
                 <p>在你使用完毕后，若想要导出抽取结果，可以点击“导出”按钮。你将得到一份 txt 文件。</p>
                 <h2>图片来源</h2>
-                <p>此版本的随机器背景来自 <a href="https://api.miaomc.cn/image">MIAOMC API</a> 的随机图片。</p>
+                <p>此版本的随机器背景来自 <a href="https://t.lizina.top/">t.lizina.top</a> 的随机图片。</p>
                 <h2>音效来源</h2>
                 <p>此版本的随机器音效由坏枪本人制作。</p>
                 <h2>Cookie 使用</h2>
                 <p>您在上传表格文件时，为了便于第二次打开保留上一次的抽取元素，我们会将您的元素列表存储为 Cookie，如果不清除则永久不过期。</p>
             </div>
         </div>
-        <button class="mdui-fab mdui-fab-mini mdui-ripple exit-button" onclick="custom_close()"><i style="color:white;" class="mdui-icon material-icons">&#xe879;</i></button>
-        <button class="mdui-fab mdui-fab-mini mdui-ripple help-button" mdui-dialog="{target: '#help-box'}"><i style="color:white;" class="mdui-icon material-icons">&#xe8fd;</i></button>
-        <button id="hide_button" class="mdui-fab mdui-fab-mini mdui-ripple visible-button" onclick="hide_info()"><i id="hide_inner" class="mdui-icon material-icons" style="color:black;">&#xe8f4;</i></button>
+        <div class="mdui-dialog" id="pres-box">
+            <div class="pres-box">
+                <h2>预设</h2>
+                <ul class="mdui-list pres-list" id="presents">
+                </ul>
+                <h2>自定义数字</h2>
+                <form name="num_form" onsubmit="return false;">
+                    <div class="num-form">
+                        <div class="mdui-textfield mdui-textfield-floating-label">
+                            <label class="mdui-textfield-label">数字</label>
+                            <input name="num_1" class="mdui-textfield-input" type="number" required/>
+                        </div>
+                        <span style="margin:10px"> - </span>
+                        <div class="mdui-textfield mdui-textfield-floating-label">
+                            <label class="mdui-textfield-label">数字</label>
+                            <input name="num_2" class="mdui-textfield-input" type="number" required/>
+                        </div>
+                        <div>
+                            <button type="button" class="mdui-fab mdui-fab-mini mdui-ripple add-button" onclick="custom_num()"><i style="color:white;" class="mdui-icon material-icons">&#xe145;</i></button>
+                        </div>
+                    </div>
+                    <div class="mdui-textfield mdui-textfield-floating-label">
+                        <label class="mdui-textfield-label">步长</label>
+                        <input name="num_3" class="mdui-textfield-input" type="number" required/>
+                        <div class="mdui-textfield-helper">步长的精度决定抽取的精度，请准确填写小数位数。</div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <button type="button" class="mdui-fab mdui-fab-mini mdui-ripple exit-button" onclick="custom_close()"><i style="color:white;" class="mdui-icon material-icons">&#xe879;</i></button>
+        <button type="button" class="mdui-fab mdui-fab-mini mdui-ripple help-button" mdui-dialog="{target: '#help-box'}"><i style="color:white;" class="mdui-icon material-icons">&#xe8fd;</i></button>
+        <button type="button" class="mdui-fab mdui-fab-mini mdui-ripple pres-button" mdui-dialog="{target: '#pres-box'}"><i style="color:black;" class="mdui-icon material-icons">&#xe8f6;</i></button>
+        <button type="button" class="mdui-fab mdui-fab-mini mdui-ripple norepeat-button" onclick="ifnorepeat()"><i style="color:black;" class="mdui-icon material-icons">&#xe040;</i></button>
+        <button type="button" id="hide_button" class="mdui-fab mdui-fab-mini mdui-ripple visible-button" onclick="hide_info()"><i id="hide_inner" class="mdui-icon material-icons" style="color:black;">&#xe8f4;</i></button>
         <div class="logo-box">
             <img class="logo" src="image/logo.png">
         </div>
@@ -373,11 +443,11 @@ li{
             </ul>
         </div>
         <div class="button-box">
-            <button class="mdui-ripple button side-button"><input type="file" onchange="excel(this)" accept=".xls,.xlsx"/>上传</button>
-            <button style="font-size: 30px;background-color: #FF6666;color: white;" class="mdui-ripple mdui-ripple-white button" onclick="start_random();">抽取</button>
-            <button class="mdui-ripple button side-button" onclick="export_txt();">导出</button>
+            <button type="button" class="mdui-ripple button side-button"><input class="hidden-input" type="file" onchange="excel(this)" accept=".xls,.xlsx"/>上传</button>
+            <button type="button" style="font-size: 30px;background-color: #FF6666;color: white;" class="mdui-ripple mdui-ripple-white button" onclick="start_random();">抽取</button>
+            <button type="button" class="mdui-ripple button side-button" onclick="export_txt();">导出</button>
         </div>
     </div>
-    <div class="background"></div>
+    <div class="background background-img"></div>
 </body>
 </html>

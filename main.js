@@ -1,33 +1,36 @@
+function reloadObj(redata){
+    full_data = redata;
+    document.cookie = 'data='+full_data+";expires=Fri, 31 Dec 9999 23:59:59 GMT;";
+    section(full_data);
+    box = document.getElementById("show-box");
+    box.innerHTML='';
+    for(var i=0;i<splitnum;i++){
+        sitem = document.createElement("div");
+        sitem.className="show-item";
+        box.appendChild(sitem);
+    }
+}
+
 function excel(obj){
     if(!obj.files) {
         return;
     };
-    var type = obj.files[0].name.split(".")[1]
+    let type = obj.files[0].name.split(".")[1]
     if(type != 'xls' && type !='xlsx'){
         alert('文件格式必须是 xls 或 xlsx 之一！')
         return
     };
-    file = obj.files[0];
-    var reader = new FileReader();
-    var lists = [];
+    let file = obj.files[0];
+    let reader = new FileReader();
+    let lists = [];
 	reader.onload = function(e) {
-		var data = e.target.result;
-		var workbook = XLSX.read(data, {type: 'binary'});
-        var jsonData = XLSX.utils.sheet_to_csv(workbook.Sheets[workbook.SheetNames[0]]);
+		let data = e.target.result;
+		let workbook = XLSX.read(data, {type: 'binary'});
+        let jsonData = XLSX.utils.sheet_to_csv(workbook.Sheets[workbook.SheetNames[0]]);
         jsonData = jsonData.replace(/[\n\r]/g,",");
-        lists = jsonData.split(",");
-        full_data = lists.filter(function(check){
-            return check != "";
-            });
-        document.cookie = 'data='+full_data+";expires=Fri, 31 Dec 9999 23:59:59 GMT;";
-        section(full_data);
-        box = document.getElementById("show-box");
-        box.innerHTML='';
-        for(var i=0;i<splitnum;i++){
-            sitem = document.createElement("div");
-            sitem.className="show-item";
-            box.appendChild(sitem);
-    }};
+        let lists = jsonData.split(",");
+        reloadObj(lists.filter(function(check){return check != "";}));
+    };
     reader.readAsBinaryString(file);
     };
 var images = new Array()
@@ -105,11 +108,44 @@ function section(data){
     splitnum = max;
     for (var i=0;i<splitnum;i++){};
     }
+
+var last_data = [];
+var no_repeat = false;
+
+function ifnorepeat(){
+    no_repeat = !no_repeat
+    if(no_repeat){
+        mdui.snackbar({
+            message: '<i class="mdui-icon material-icons">&#xe5ca;</i> 已切换不重复模式',
+            position: 'top'
+        })
+    } else {
+        mdui.snackbar({
+            message: '<i class="mdui-icon material-icons">&#xe5ca;</i> 已关闭不重复模式',
+            position: 'top'
+        })
+    }
+}
 function start_random(){
     if (times==0){
         random_i = Math.floor(full_data.length*Math.random());
         random_index = random_i == full_data.length ? random_i-1 : random_i;
         chosen_name = full_data[random_index];
+        if(no_repeat == true){
+            if(!(last_data.length < full_data.length)){
+                last_data = [];
+                mdui.snackbar({
+                    message: '<i class="mdui-icon material-icons">&#xe5ca;</i> 所有元素均已抽取，不重复模式已重置',
+                    position: 'top'
+                })
+            }
+            while(last_data.includes(chosen_name)){
+                random_i = Math.floor(full_data.length*Math.random());
+                random_index = random_i == full_data.length ? random_i-1 : random_i;
+                chosen_name = full_data[random_index];
+            }
+        }
+        last_data.push(chosen_name);
         passing_audio.play();
         chose_audio.pause();
         chose_audio.load();
@@ -191,6 +227,8 @@ function start_random(){
         }
             }
         }
+
+var present_list = [];
 $(document).ready(function(){
     section(full_data);
     box = document.getElementById("show-box");
@@ -198,7 +236,36 @@ $(document).ready(function(){
         sitem = document.createElement("div");
         sitem.className="show-item";
         box.appendChild(sitem);
-    }}
+    }
+    let present_chose = document.getElementById("presents");
+    let j = 0;
+    for(let p = 0;p<presentList.length;p++){
+        let nowp = presentList[p];
+        let subnowp = document.createElement("li");
+        subnowp.className = "mdui-subheader";
+        subnowp.innerHTML = nowp.category;
+        present_chose.appendChild(subnowp);
+        let pitem = nowp.value;
+        for(let m = 0;m<pitem.length;m++){
+            let nowitem = pitem[m];
+            present_list.push(nowitem);
+            let pres = document.createElement("li");
+            let icon = document.createElement("i");
+            let name = document.createElement("span");
+            icon.innerHTML = nowitem.icon;
+            icon.className = "mdui-icon material-icons";
+            name.innerHTML = nowitem.name;
+            name.className = "pres-name",
+            pres.appendChild(icon);
+            pres.appendChild(name);
+            pres.setAttribute("data-id",j);
+            pres.className = "mdui-list-item mdui-ripple";
+            pres.setAttribute("onclick","change_pre(this);");
+            present_chose.appendChild(pres);
+            j ++;
+        }
+    }
+    }
 );
 window.onload=function(){
     document.getElementById('loading').className="loading-out";
@@ -236,4 +303,52 @@ function show_info(){
     text_name = "inner-text";
     $(".side-button").css("transform","scale(1)");
     $("#hide_button").attr("onclick","hide_info()");
+}
+function change_pre(chosen_pre){
+    let pre_index = chosen_pre.getAttribute("data-id");
+    reloadObj(present_list[pre_index].value);
+    mdui.snackbar({
+        message: '<i class="mdui-icon material-icons">&#xe5ca;</i> 已应用预设',
+        position: 'top'
+    })
+}
+function custom_num(){
+    let num_form = document.forms["num_form"];
+    for(let o = 1;o<=3;o++){
+        let numtag = "num_" + o;
+        if(num_form[numtag].value == ""){
+            mdui.snackbar({
+                message: '<i class="mdui-icon material-icons">&#xe001;</i> 请填满所有值',
+                position: 'top'
+            });
+            return
+        }
+    }
+    let rangenum = [Number(num_form["num_1"].value),Number(num_form["num_2"].value)];
+    rangenum = rangenum[0] > rangenum[1] ? rangenum : [rangenum[1],rangenum[0]];
+    let num_foot = Number(num_form["num_3"].value);
+    let num_foot_r = num_form["num_3"].value;
+    if(num_foot <= 0){
+        mdui.snackbar({
+            message: '<i class="mdui-icon material-icons">&#xe001;</i> 步长必须大于零',
+            position: 'top'
+        });
+        return
+    }
+    let picknum = rangenum[1];
+    let num_list = [];
+    if(String(num_foot_r).includes(".")){
+        maxFloat = String(num_foot_r).length - String(num_foot_r).indexOf(".") - 1
+    } else {
+        maxFloat = 0
+    }
+    while(picknum <= rangenum[0]){
+        num_list.push(String(picknum.toFixed(maxFloat)));
+        picknum += num_foot
+    }
+    reloadObj(num_list);
+    mdui.snackbar({
+        message: '<i class="mdui-icon material-icons">&#xe5ca;</i> 已设置为指定范围',
+        position: 'top'
+    })
 }
