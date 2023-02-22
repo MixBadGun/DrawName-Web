@@ -1,6 +1,9 @@
-function reloadObj(redata){
+function reloadObj(redata,cookie_b){
     full_data = redata;
-    document.cookie = 'data='+full_data+";expires=Fri, 31 Dec 9999 23:59:59 GMT;";
+    full_norepeat = full_data;
+    if(cookie_b != false){
+        document.cookie = 'data='+full_data+";expires=Fri, 31 Dec 9999 23:59:59 GMT;";
+        }
     section(full_data);
     box = document.getElementById("show-box");
     box.innerHTML='';
@@ -29,7 +32,7 @@ function excel(obj){
         let jsonData = XLSX.utils.sheet_to_csv(workbook.Sheets[workbook.SheetNames[0]]);
         jsonData = jsonData.replace(/[\n\r]/g,",");
         let lists = jsonData.split(",");
-        reloadObj(lists.filter(function(check){return check != "";}));
+        reloadObj(lists.filter(function(check){return check != "";}),true);
     };
     reader.readAsBinaryString(file);
     };
@@ -77,11 +80,12 @@ function getCookie(cname)
 }
 full_data = getCookie("data");
 if(full_data == ''){
-    var full_data = ['大吉','小吉','中吉','凶','大凶']
+    var full_data = ['大吉','小吉','中吉','凶','大凶'];
 }
 else{
-    full_data = full_data.split(',');
+    var full_data = full_data.split(',');
 };
+var full_norepeat = full_data;
 var namelist=[];
 var splitnum=0;
 var times = 0;
@@ -111,11 +115,11 @@ function section(data){
     for (var i=0;i<splitnum;i++){};
     }
 
-var last_data = [];
 var no_repeat = false;
 
 function ifnorepeat(){
-    no_repeat = !no_repeat
+    no_repeat = !no_repeat;
+    full_norepeat = full_data;
     if(no_repeat){
         mdui.snackbar({
             message: '<i class="mdui-icon material-icons">&#xe5ca;</i> 已切换不重复模式',
@@ -129,25 +133,28 @@ function ifnorepeat(){
     }
 }
 function start_random(){
+    var chose_list = no_repeat ? full_norepeat : full_data;
     if (times==0){
-        random_i = Math.floor(full_data.length*Math.random());
-        random_index = random_i == full_data.length ? random_i-1 : random_i;
-        chosen_name = full_data[random_index];
+        box = document.getElementById("show-box");
+        for(var i=0;i<splitnum;i++){
+            hcl = h_info ? "show-item-big" : "show-item";
+            box.children[i].className = hcl;
+        }
+        random_i = Math.floor(chose_list.length*Math.random());
+        random_index = random_i == chose_list.length ? random_i-1 : random_i;
+        chosen_name = chose_list[random_index];
+        full_norepeat = chose_list.filter(function(ite){
+            return ite != chosen_name
+        });
         if(no_repeat == true){
-            if(!(last_data.length < full_data.length)){
-                last_data = [];
+            if(!(full_norepeat.length > 0)){
+                full_norepeat = full_data;
                 mdui.snackbar({
                     message: '<i class="mdui-icon material-icons">&#xe5ca;</i> 所有元素均已抽取，不重复模式已重置',
                     position: 'top'
                 })
             }
-            while(last_data.includes(chosen_name)){
-                random_i = Math.floor(full_data.length*Math.random());
-                random_index = random_i == full_data.length ? random_i-1 : random_i;
-                chosen_name = full_data[random_index];
-            }
         }
-        last_data.push(chosen_name);
         passing_audio.play();
         chose_audio.pause();
         chose_audio.load();
@@ -160,8 +167,8 @@ function start_random(){
         box.children[i].innerHTML='';
         box.children[i].appendChild(gif);
     };
-    times += 1;}
-    else{
+    times += 1;
+    } else {
         bullon = false;
         random_item = split_name(chosen_name);
         if (times >= chosen_name.length || times == splitnum){
@@ -195,9 +202,11 @@ function start_random(){
                 text = document.createElement("div");
                 text.className = text_name;
                 if(chosen_name[i] != undefined){
-                text.innerHTML = chosen_name[i];}
+                    text.innerHTML = chosen_name[i];}
                 else{
                     text.innerHTML = '';
+                    step.className = "show-item-none";
+
                 }
                 step.appendChild(text);
                     };};
@@ -268,46 +277,37 @@ $(document).ready(function(){
     }
     }
 );
-window.onload=function(){
-    document.getElementById('loading').className="loading-out";
-    setTimeout(function(){
-        document.getElementById('loading').remove();
-    },500);
-}
+
 function custom_close(){
-    if(confirm("您确定要退出吗？")){
-        window.opener=null;
-        window.open('','_self');
-        window.close();
-    }
-    else{
-    }
+    window.close();
 }
+var h_info = false;
 function hide_info(){
-    $("#info-out").css("height","0%");
-    $("#show-box").css("height","100%");
-    $(".show-item").css("width","200px");
-    $(".show-item").css("height","200px");
-    $(".inner-text").css("font-size","125px");
-    $(".inner-big-text").css("font-size","125px");
-    text_name = "inner-big-text";
-    $(".side-button").css("transform","scale(0)");
-    $("#hide_button").attr("onclick","show_info()");
-}
-function show_info(){
-    $("#info-out").css("height","100%");
-    $("#show-box").css("height","125px");
-    $(".show-item").css("width","125px");
-    $(".show-item").css("height","125px");
-    $(".inner-text").css("font-size","85px");
-    $(".inner-big-text").css("font-size","85px");
-    text_name = "inner-text";
-    $(".side-button").css("transform","scale(1)");
-    $("#hide_button").attr("onclick","hide_info()");
+    h_info = !h_info;
+    box = document.getElementById("show-box");
+    for(var i=0;i<splitnum;i++){
+        hcl = h_info ? "show-item-big" : "show-item";
+        box.children[i].className = hcl;
+    }
+    if(h_info) {
+        $("#info-out").css("height","0%");
+        $("#show-box").css("height","100%");
+        $(".inner-text").css("font-size","125px");
+        $(".inner-big-text").css("font-size","125px");
+        text_name = "inner-big-text";
+    } else {
+        $("#info-out").css("height","100%");
+        $("#show-box").css("height","125px");
+        $(".show-item-big").css("min-width","125px");
+        $(".show-item-big").css("min-height","125px");
+        $(".inner-text").css("font-size","85px");
+        $(".inner-big-text").css("font-size","85px");
+        text_name = "inner-text";
+    }
 }
 function change_pre(chosen_pre){
     let pre_index = chosen_pre.getAttribute("data-id");
-    reloadObj(present_list[pre_index].value);
+    reloadObj(present_list[pre_index].value,false);
     mdui.snackbar({
         message: '<i class="mdui-icon material-icons">&#xe5ca;</i> 已应用预设',
         position: 'top'
@@ -347,9 +347,13 @@ function custom_num(){
         num_list.push(String(picknum.toFixed(maxFloat)));
         picknum += num_foot
     }
-    reloadObj(num_list);
+    reloadObj(num_list,false);
     mdui.snackbar({
         message: '<i class="mdui-icon material-icons">&#xe5ca;</i> 已设置为指定范围',
         position: 'top'
     })
+}
+
+window.onload = function(){
+    document.getElementById("back").style.opacity = 1;
 }

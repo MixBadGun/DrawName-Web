@@ -1,5 +1,5 @@
 :root {
-    --root-back: #FFFFFF;
+    --root-back: linear-gradient(0deg, #cfd9df 0%,#e2ebf0 100%);
     --text: #000000;
     --loading: rgba(255, 255, 255, 0.5);
     --block-back: rgba(255, 255, 255, 0.8);
@@ -9,14 +9,15 @@
     --times-back: #FB7299;
     --times-text: #FFFFFF;
     --icon-color: #000000;
-    --border-color: rgba(255, 255, 255, 0.6);
+    --border-color: rgba(0, 0, 0, 0.2);
     --chose-image: url("./image/chose.webp");
     --brightness: brightness(1);
     --shining: #FFFFFF;
+    --choose-button: #FF6666;
 }
 @media(prefers-color-scheme:dark) {
     :root {
-        --root-back: #000000;
+        --root-back: linear-gradient(270deg, #403A3E 0%,#111111 100%);
         --text: #FFFFFF;
         --loading: rgba(0, 0, 0, 0.5);
         --block-back: rgba(0, 0, 0, 0.8);
@@ -30,5 +31,6 @@
         --chose-image: url("./image/chose_white.webp");
         --brightness: brightness(0.5);
         --shining: #000000;
+        --choose-button: rgba(0, 0, 0, 0.8);
     }
 }

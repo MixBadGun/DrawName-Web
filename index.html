@@ -9,7 +9,7 @@
 <script src="https://cdn.staticfile.org/mdui/1.0.2/js/mdui.min.js"></script>
 <script src="https://cdn.staticfile.org/xlsx/0.18.3/xlsx.full.min.js"></script>
 <script type="text/javascript" src="present/present.js"></script>
-<script type="text/javascript" src="main.js"></script>
+<script type="text/javascript" src="maining.js"></script>
 <script type="text/javascript" src="export_txt.js"></script>
 <style>
 html, body { height: 100%; }
@@ -17,65 +17,16 @@ body{
     color: var(--text);
     margin:0;
     font-family: 'HarmonyOS Sans SC', 'Source Han Sans SC';
-}
-.loading{
-    display: flex;
-    position: absolute;
-    flex-direction: column;
-    justify-content: center;
-    align-content: space-around;
-    width: 100%;
-    height: 100%;
-    background-color: var(--loading);
-    backdrop-filter: blur(20px);
-    z-index: 100;
-}
-.loading-out{
-    display: flex;
-    position: absolute;
-    flex-direction: column;
-    justify-content: center;
-    align-content: space-around;
-    width: 100%;
-    height: 100%;
-    background-color: var(--loading);
-    backdrop-filter: blur(20px);
-    opacity: 1;
-    animation: loading-over 0.5s;
-    animation-fill-mode:forwards;
-}
-@keyframes loading-over{
-    from{
-        opacity: 1;
-        backdrop-filter: blur(20px);
-    }
-    to{
-        opacity: 0;
-        backdrop-filter: blur(0px);
-    }
-}
-.loading-circle{
-    margin: 0 auto;
-    width: 75px;
-    height: 75px;
-    padding: 20px;
-}
-.loading-text{
-    text-align: center;
-    width: 100%;
-    height: fit-content;
-    font-size: 25px;
-    font-weight: 600;
+    background: var(--root-back);
 }
 .outbox{
     display: flex;
     flex-direction: column;
     width: 100%;
-    max-width: 1024px;
     height: 100%;
     margin: auto;
 }
-.background{
+.background {
     position: absolute;
     top: 0;
     width: 100%;
@@ -84,6 +35,8 @@ body{
     background-color: var(--root-back);
     background-size: cover;
     background-position: center;
+    opacity: 0;
+    transition: all 1s;
     z-index: -2;
 }
 .background-img {
@@ -107,30 +60,57 @@ body{
     display: flex;
     justify-content: center;
     width: 100%;
-    margin-bottom: 1em;
-    transition: all 1s;
+    transition: all 0.5s;
     align-items: center;
-    min-height: 160px;
+    min-height: 150px;
+    height: 150px;
     overflow-x: scroll;
+    overflow-y: hidden;
+}
+.show-box::-webkit-scrollbar{
+    height: 10px;
+}
+.show-box::-webkit-scrollbar-thumb {
+    background-color: var(--block-back);
+    border: solid 1px var(--border-color);
+    border-radius: 10px;
+    box-shadow: 0 2px 8px 1px rgb(0 0 0 / 10%);
 }
 .show-item{
     display: flex;
-    width: 125px;
-    height: 125px;
+    min-width: 125px;
+    min-height: 125px;
     border-radius: 10px;
     background-color: var(--block-back);
     backdrop-filter: blur(10px);
-    transition: all 1s;
-    box-shadow: 0 10px 12px 1px rgb(0 0 0 / 10%);
-    margin: 0 8px;
+    transition: all 0.5s;
+    box-shadow: 0 2px 8px 1px rgb(0 0 0 / 10%);
+    margin: 0 5px;
     border: solid 1px var(--border-color);
+}
+.show-item-big{
+    display: flex;
+    min-width: 200px;
+    min-height: 200px;
+    border-radius: 10px;
+    background-color: var(--block-back);
+    backdrop-filter: blur(10px);
+    transition: all 0.5s;
+    box-shadow: 0 10px 12px 1px rgb(0 0 0 / 10%);
+    margin: 0 5px;
+    border: solid 1px var(--border-color);
+}
+.show-item-none {
+    transition: all 0.5s;
+    min-width: 0;
+    min-height: 0;
 }
 .inner-text{
     width: fit-content;
     height: fit-content;
     font-size: 85px;
     font-weight: 900;
-    transition: all 1s;
+    transition: all 0.5s;
     margin: auto;
     animation:item-shake 0.1s cubic-bezier(0.175, 0.885, 0.320, 1.275);
 }
@@ -139,7 +119,7 @@ body{
     height: fit-content;
     font-size: 125px;
     font-weight: 900;
-    transition: all 1s;
+    transition: all 0.5s;
     margin: auto;
     animation:item-shake 0.1s cubic-bezier(0.175, 0.885, 0.320, 1.275);
 }
@@ -184,7 +164,7 @@ body{
     height:100%;
     overflow-y: scroll;
     position: relative;
-    transition: all 1s;
+    transition: all 0.5s;
 }
 @keyframes info-out{
     from{
@@ -306,6 +286,7 @@ body{
     top: 110px;
     background-color: var(--button-back);
     position: absolute;
+    z-index: 5;
 }
 .norepeat-button:hover{
     background-color: var(--button-back-hover);
@@ -323,6 +304,7 @@ body{
     backdrop-filter: blur(10px);
     box-shadow: 0 10px 12px 1px rgb(0 0 0 / 10%);
     line-height: 1.5em;
+    overflow-y: scroll;
 }
 .hiding-bar{
     background: #ff4081;
@@ -383,19 +365,19 @@ body{
         opacity: 0;
     }
 }
+.choose-button{
+    display: flex;
+    font-size: 30px;
+    background-color: var(--choose-button);
+    border: solid 1px var(--border-color);
+    color: white;
+    align-items: center;
+}
 </style>
 <meta charset="utf-8">
-<title>坏枪随机器 5.13</title>
+<title>坏枪随机器 5.15</title>
 </head>
 <body class="mdui-theme-layout-auto">
-<div id="loading" class="loading">
-    <div class="loading-circle">
-        <div class="mdui-spinner"></div>
-    </div>
-    <div class="loading-text">
-        加载中
-    </div>
-</div>
     <div id="outbox" class="outbox">
         <div class="mdui-dialog help-box" id="help-box">
             <h1>欢迎使用 坏枪随机器！</h1>
@@ -412,10 +394,15 @@ body{
             <p>您在上传表格文件时，为了便于第二次打开保留上一次的抽取元素，我们会将您的元素列表存储为 Cookie，如果不清除则永久不过期。</p>
         </div>
         <div class="mdui-dialog pres-box" id="pres-box">
+            <h2>自定义</h2>
+            <div>
+                <button type="button" class="mdui-ripple button side-button"><input class="hidden-input" type="file" onchange="excel(this)" accept=".xls,.xlsx"/>上传</button>
+                <button type="button" class="mdui-ripple button side-button" onclick="export_txt();">导出</button>
+            </div>
             <h2>预设</h2>
             <ul class="mdui-list pres-list" id="presents">
             </ul>
-            <h2>自定义数字</h2>
+            <h2>数字</h2>
             <form name="num_form" onsubmit="return false;">
                 <div class="num-form">
                     <div class="mdui-textfield mdui-textfield-floating-label">
@@ -453,11 +440,9 @@ body{
             </ul>
         </div>
         <div class="button-box">
-            <button type="button" class="mdui-ripple button side-button"><input class="hidden-input" type="file" onchange="excel(this)" accept=".xls,.xlsx"/>上传</button>
-            <button type="button" style="font-size: 30px;background-color: #FF6666;color: white;" class="mdui-ripple mdui-ripple-white button" onclick="start_random();">抽取</button>
-            <button type="button" class="mdui-ripple button side-button" onclick="export_txt();">导出</button>
+            <button type="button" class="mdui-ripple mdui-ripple-white button choose-button" onclick="start_random();"><i style="font-size: 25px;" class="mdui-icon material-icons">&#xe163;</i><span style="margin-left:10px">抽取</span></button>
         </div>
     </div>
-    <div class="background background-img"></div>
+    <div id="back" class="background background-img"></div>
 </body>
 </html>
