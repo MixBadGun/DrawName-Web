@@ -16,7 +16,7 @@ html, body { height: 100%; }
 body{
     color: var(--text);
     margin:0;
-    font-family: 'HarmonyOS Sans SC', 'Source Han Sans SC';
+    font-family: 'HarmonyOS Sans SC', 'Source Han Sans SC', var(--font-fallback);
     background: var(--root-back);
 }
 .outbox{
@@ -40,11 +40,11 @@ body{
     z-index: -2;
 }
 .background-img {
-    background-image: url("https://t.lizina.top/pc");
+    background-image: url("https://bing.img.run/rand_uhd.php");
 }
 @media all and (orientation : portrait){
     .background-img {
-        background-image: url("https://t.lizina.top/mp");
+        background-image: url("https://bing.img.run/rand_m.php");
     }
 }
 .logo-box{
@@ -211,9 +211,9 @@ body{
 }
 .rolling{
     width: 100%;
-    background-image: var(--chose-image);
     background-position: center;
     background-size: cover;
+    filter: var(--filter);
 }
 .info-box::-webkit-scrollbar {
     width: 4px;
@@ -375,7 +375,7 @@ body{
 }
 </style>
 <meta charset="utf-8">
-<title>坏枪随机器 5.15</title>
+<title>坏枪随机器 5.16</title>
 </head>
 <body class="mdui-theme-layout-auto">
     <div id="outbox" class="outbox">
@@ -387,11 +387,13 @@ body{
             <p>目前对空白单元格已经进行了过滤。</p>
             <p>在你使用完毕后，若想要导出抽取结果，可以点击“导出”按钮。你将得到一份 txt 文件。</p>
             <h2>图片来源</h2>
-            <p>此版本的随机器背景来自 <a href="https://t.lizina.top/">t.lizina.top</a> 的随机图片。</p>
+            <p>此版本的随机器背景使用了必应壁纸。</p>
             <h2>音效来源</h2>
             <p>此版本的随机器音效由坏枪本人制作。</p>
             <h2>Cookie 使用</h2>
             <p>您在上传表格文件时，为了便于第二次打开保留上一次的抽取元素，我们会将您的元素列表存储为 Cookie，如果不清除则永久不过期。</p>
+            <h2>免责声明</h2>
+            <p>本软件在未经篡改的情况下可正常使用，对所抽取的结果概不负责。</p>
         </div>
         <div class="mdui-dialog pres-box" id="pres-box">
             <h2>自定义</h2>
@@ -442,6 +444,7 @@ body{
         <div class="button-box">
             <button type="button" class="mdui-ripple mdui-ripple-white button choose-button" onclick="start_random();"><i style="font-size: 25px;" class="mdui-icon material-icons">&#xe163;</i><span style="margin-left:10px">抽取</span></button>
         </div>
+        <div id="shining"></div>
     </div>
     <div id="back" class="background background-img"></div>
 </body>

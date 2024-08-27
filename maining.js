@@ -47,8 +47,12 @@ function preload_sounds() {
         sounds[i] = new Audio();
         sounds[i].src = preload_sounds.arguments[i]}}
 preload(
-            "image/chose.webp",
-            "image/chose_white.webp",
+            "image/chose_0.webp",
+            "image/chose_1.webp",
+            "image/chose_2.webp",
+            "image/chose_3.webp",
+            "image/chose_4.webp",
+            "image/chose_5.webp",
             "image/logo.png"
                 )
 preload_sounds(
@@ -164,6 +168,7 @@ function start_random(){
     for(var i=0; i<splitnum; i++){
         gif = document.createElement("div");
         gif.className = "rolling";
+        gif.style = `background-image: url('./image/chose_${(i % 6)}.webp');`
         box.children[i].innerHTML='';
         box.children[i].appendChild(gif);
     };
@@ -188,13 +193,10 @@ function start_random(){
             passing_audio.pause();
             passing_audio.load();
             chose_audio.play();
-            outbox = document.getElementById("outbox");
-            shining = document.createElement("div");
-            shining.className = "shining";
-            outbox.appendChild(shining);
-            setTimeout(function(){
-                shining.remove();
-            },1000)
+            shining = document.getElementById("shining");
+            shining.classList.remove("shining")
+            void shining.offsetWidth
+            shining.classList.add("shining")
             if(times>0){
             for(var i=times-1;i<splitnum;i++){
                 step = box.children[i];

@@ -10,10 +10,16 @@
     --times-text: #FFFFFF;
     --icon-color: #000000;
     --border-color: rgba(0, 0, 0, 0.2);
-    --chose-image: url("./image/chose.webp");
     --brightness: brightness(1);
     --shining: #FFFFFF;
     --choose-button: #FF6666;
+    --filter: invert();
+    --font-fallback:
+    /* 常规黑体 */ 'HarmonyOS Sans SC', 'Source Han Sans',
+        'Segoe UI Variable Display', sans-serif, /* MiSans 生僻字集 */ 'MiSans L3',
+        /* https://github.com/MY1L/Unicode */ 'Noto Unicode', 'Monu Hani', 'Monu Han2', 'Monu Han3',
+        'Noto Serif Tangut', 'Monu Temp', /* 天珩全字库 */ 'TH-Tshyn-P0', 'TH-Tshyn-P1', 'TH-Tshyn-P2',
+        'TH-Tshyn-P16', 'TH-Times';
 }
 @media(prefers-color-scheme:dark) {
     :root {
@@ -28,9 +34,9 @@
         --times-text: #000000;
         --icon-color: #FFFFFF;
         --border-color: rgba(255, 255, 255, 0.2);
-        --chose-image: url("./image/chose_white.webp");
         --brightness: brightness(0.5);
         --shining: #000000;
         --choose-button: rgba(0, 0, 0, 0.8);
+        --filter: none;
     }
 }
