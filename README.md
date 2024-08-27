@@ -10,4 +10,4 @@
 
 此模式适用于姓氏相同或相似名称的抽取，更有助于营造“刺激”的氛围。
 ## 可用地址
-* 在线使用：https://mixbadgun.cn/drawname/
+* 在线使用：https://otm.ink/drawname/
