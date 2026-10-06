@@ -560,10 +560,14 @@ body{
                     <button type="button" id="clear-cloud-button" class="mdui-ripple card-button clear-button" onclick="clear_cloud_storage()">清除云存储</button>
                 </div>
             </div>
+            <h2>导出结果</h2>
+            <div class="input-button-box">
+                <button type="button" class="mdui-ripple button side-button" onclick="export_txt();">导出抽取结果</button>
+                <button type="button" class="mdui-ripple button side-button" onclick="copy_to_clipboard();">复制到剪贴板</button>
+            </div>
             <h2>自定义</h2>
             <div class="input-button-box">
                 <button type="button" class="mdui-ripple button side-button"><input class="hidden-input" type="file" onchange="excel(this)" accept=".xls,.xlsx"/>上传 Excel 名单</button>
-                <button type="button" class="mdui-ripple button side-button" onclick="export_txt();">导出抽取结果</button>
             </div>
             <div class="manual-box">
                 <textarea id="manual-input" class="manual-input" rows="3" placeholder="手动输入元素，用逗号或换行分隔"></textarea>

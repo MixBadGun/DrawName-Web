@@ -383,3 +383,56 @@ function apply_manual_input(){
 window.onload = function(){
     document.getElementById("back").style.opacity = 1;
 }
+
+//写入剪贴板：优先用异步 API，失败或不可用时回退到 execCommand
+async function copy_text(text){
+    if(navigator.clipboard && window.isSecureContext){
+        try{
+            await navigator.clipboard.writeText(text);
+            return
+        }catch(e){
+            // 继续尝试 execCommand 兜底
+        }
+    }
+    let temp = document.createElement("textarea");
+    temp.value = text;
+    temp.setAttribute("readonly", "");
+    temp.style.cssText = "position:fixed;top:0;left:0;width:1px;height:1px;padding:0;border:none;opacity:0;";
+    document.body.appendChild(temp);
+    temp.focus();
+    temp.select();
+    temp.setSelectionRange(0, temp.value.length);
+    let ok = false;
+    try{
+        ok = document.execCommand("copy");
+    }catch(e){
+        ok = false;
+    }
+    document.body.removeChild(temp);
+    if(!ok){
+        throw new Error("copy failed")
+    }
+}
+
+function copy_to_clipboard(){
+    let texting = get_result_text();
+    if(texting == ""){
+        mdui.snackbar({
+            message: '<i class="mdui-icon material-icons">&#xe001;</i> 还没有抽取结果可复制',
+            position: 'top'
+        });
+        return
+    }
+    let count = texting.replace(/\n$/, "").split("\n").length;
+    copy_text(texting).then(function(){
+        mdui.snackbar({
+            message: '<i class="mdui-icon material-icons">&#xe5ca;</i> 已复制 ' + count + ' 条抽取结果',
+            position: 'top'
+        })
+    }).catch(function(){
+        mdui.snackbar({
+            message: '<i class="mdui-icon material-icons">&#xe001;</i> 复制失败，请改用“导出抽取结果”',
+            position: 'top'
+        })
+    })
+}
