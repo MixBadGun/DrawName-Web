@@ -8,6 +8,8 @@
 <link href="./css/color.css" rel="stylesheet">
 <script src="https://cdn.staticfile.org/mdui/1.0.2/js/mdui.min.js"></script>
 <script src="https://cdn.staticfile.org/xlsx/0.18.3/xlsx.full.min.js"></script>
+<script src="//s1.hdslb.com/bfs/seed/toy/app/sdk/toy-sdk.js"></script>
+<script type="text/javascript" src="toy_storage.js"></script>
 <script type="text/javascript" src="present/present.js"></script>
 <script type="text/javascript" src="maining.js"></script>
 <script type="text/javascript" src="export_txt.js"></script>
@@ -40,11 +42,11 @@ body{
     z-index: -2;
 }
 .background-img {
-    background-image: url("https://bing.img.run/rand_uhd.php");
+    background-image: url("./image/background.webp");
 }
 @media all and (orientation : portrait){
     .background-img {
-        background-image: url("https://bing.img.run/rand_m.php");
+        background-image: url("./image/background.webp");
     }
 }
 .logo-box{
@@ -296,10 +298,13 @@ body{
     background-color: var(--box-back)!important;
     backdrop-filter: blur(10px);
     box-shadow: 0 10px 12px 1px rgb(0 0 0 / 10%);
-    line-height: 1.5em;
+    line-height: 1.8em;
+    border-radius: 5px;
+    overflow-y: scroll;
 }
 .pres-box{
     padding: 0 20px;
+    border-radius: 5px;
     background-color: var(--box-back)!important;
     backdrop-filter: blur(10px);
     box-shadow: 0 10px 12px 1px rgb(0 0 0 / 10%);
@@ -343,6 +348,9 @@ body{
 .pres-list {
     max-height: 400px;
     overflow-y: scroll;
+    background-color: var(--block-back);
+    border: solid 1px var(--border-color);
+    border-radius: 5px;
 }
 .pres-name {
     margin-left: 10px;
@@ -373,45 +381,208 @@ body{
     color: white;
     align-items: center;
 }
+
+.info-card {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+    background-color: var(--block-back);
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.info-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.info-name {
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.info-homepage {
+    margin-left: auto;
+    text-decoration: none;
+    color: white;
+    background-color: #ff4081;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.info-actions {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.card-button {
+    border: none;
+    cursor: pointer;
+    color: white;
+    background-color: #ff4081;
+    padding: 6px 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.clear-button {
+    background-color: #757575;
+}
+
+.clear-button-confirm {
+    background-color: #e53935;
+}
+
+.manual-box {
+    display: flex;
+    flex-direction: column;
+    margin-top: 12px;
+    padding: 10px 12px;
+    border-radius: 5px;
+    border: solid 1px var(--border-color);
+    background-color: var(--block-back);
+    box-shadow: 0 2px 8px 1px rgb(0 0 0 / 10%);
+}
+
+.manual-input {
+    width: 100%;
+    box-sizing: border-box;
+    border: none;
+    outline: none;
+    resize: vertical;
+    background: transparent;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 16px;
+    line-height: 1.5em;
+    min-height: 72px;
+    max-height: 180px;
+}
+
+.manual-input::placeholder {
+    color: var(--text);
+    opacity: 0.35;
+}
+
+.manual-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: solid 1px var(--border-color);
+}
+
+.manual-hint {
+    font-size: 12px;
+    line-height: 1.4em;
+    opacity: 0.55;
+}
+
+.manual-apply {
+    flex: none;
+    border: none;
+    cursor: pointer;
+    color: white;
+    background-color: #FB7299;
+    padding: 7px 18px;
+    border-radius: 5px;
+    font-size: 15px;
+    font-weight: 700;
+    white-space: nowrap;
+    transition: 0.25s cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+
+.manual-apply:hover {
+    transform: scale(1.05);
+}
+
+.manual-apply:active {
+    transform: scale(0.95);
+}
+
+.input-button-box {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+    justify-content: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.num-form-box {
+    margin-top: 12px;
+    margin-bottom: 12px;
+    padding: 10px 12px;
+    border-radius: 5px;
+    border: solid 1px var(--border-color);
+    background-color: var(--block-back);
+    box-shadow: 0 2px 8px 1px rgb(0 0 0 / 10%);
+}
 </style>
 <meta charset="utf-8">
-<title>坏枪随机器 5.16</title>
+<title>坏枪随机器 6</title>
 </head>
 <body class="mdui-theme-layout-auto">
     <div id="outbox" class="outbox">
         <div class="mdui-dialog help-box" id="help-box">
             <h1>欢迎使用 坏枪随机器！</h1>
-            <h2>网站介绍</h2>
-            <p>坏枪随机器 是可以进行随机抽取元素的软件，最初由 Python 编写，现重写为 HTML 版。</p>
+            <div class="info-card">
+                <img class="info-avatar" src="./image/avatar.webp" alt="坏枪头像">
+                <div class="info-name">坏枪</div>
+                <a href="https://space.bilibili.com/6636705" target="_blank" class="info-homepage">个人主页</a>
+            </div>
+            <h2>介绍</h2>
+            <p>坏枪随机器源自2021年，是可以进行随机抽取元素的软件，最初由 Python 编写，现重写为 HTML 版。</p>
             <p>在这里，你只需要将含有抽取元素的 xls 或 xlsx 文件点击底下的“上传”按钮进行上传，即可导入自定义抽取列表。</p>
             <p>目前对空白单元格已经进行了过滤。</p>
             <p>在你使用完毕后，若想要导出抽取结果，可以点击“导出”按钮。你将得到一份 txt 文件。</p>
-            <h2>图片来源</h2>
-            <p>此版本的随机器背景使用了必应壁纸。</p>
             <h2>音效来源</h2>
             <p>此版本的随机器音效由坏枪本人制作。</p>
-            <h2>Cookie 使用</h2>
-            <p>您在上传表格文件时，为了便于第二次打开保留上一次的抽取元素，我们会将您的元素列表存储为 Cookie，如果不清除则永久不过期。</p>
+            <h2>网络存储 / Cookie 使用</h2>
+            <p>如果您是由B站Toy访问，那么您的抽取名单会被上传至B站的云存储，下次打开可继续使用。</p>
+            <p>如果您是通过其他方式访问，我们会将您的元素列表存储为 Cookie，如果不清除则永久不过期。</p>
             <h2>免责声明</h2>
             <p>本软件在未经篡改的情况下可正常使用，对所抽取的结果概不负责。</p>
         </div>
         <div class="mdui-dialog pres-box" id="pres-box">
+            <div class="info-card" id="user-card" style="display:none;">
+                <img class="info-avatar" id="user-avatar" src="./image/logo.png" alt="用户头像">
+                <div class="info-name" id="user-name">获取用户信息中…</div>
+                <div class="info-actions">
+                    <button type="button" id="user-login-button" class="mdui-ripple card-button" style="display:none;" onclick="refresh_user_profile(true)">获取用户信息</button>
+                    <button type="button" id="clear-cloud-button" class="mdui-ripple card-button clear-button" onclick="clear_cloud_storage()">清除云存储</button>
+                </div>
+            </div>
             <h2>自定义</h2>
-            <div>
-                <button type="button" class="mdui-ripple button side-button"><input class="hidden-input" type="file" onchange="excel(this)" accept=".xls,.xlsx"/>上传</button>
-                <button type="button" class="mdui-ripple button side-button" onclick="export_txt();">导出</button>
+            <div class="input-button-box">
+                <button type="button" class="mdui-ripple button side-button"><input class="hidden-input" type="file" onchange="excel(this)" accept=".xls,.xlsx"/>上传 Excel 名单</button>
+                <button type="button" class="mdui-ripple button side-button" onclick="export_txt();">导出当前名单</button>
+            </div>
+            <div class="manual-box">
+                <textarea id="manual-input" class="manual-input" rows="3" placeholder="手动输入元素，用逗号或换行分隔"></textarea>
+                <div class="manual-foot">
+                    <span class="manual-hint">逗号或换行分隔</span>
+                    <button type="button" class="mdui-ripple manual-apply" onclick="apply_manual_input();">应用</button>
+                </div>
             </div>
             <h2>预设</h2>
             <ul class="mdui-list pres-list" id="presents">
             </ul>
             <h2>数字</h2>
-            <form name="num_form" onsubmit="return false;">
+            <form name="num_form" class="num-form-box" onsubmit="return false;">
                 <div class="num-form">
                     <div class="mdui-textfield mdui-textfield-floating-label">
                         <label class="mdui-textfield-label">数字</label>
                         <input name="num_1" class="mdui-textfield-input" type="number" required/>
                     </div>
-                    <span style="margin:10px"> - </span>
+                    <span style="margin:10px"> → </span>
                     <div class="mdui-textfield mdui-textfield-floating-label">
                         <label class="mdui-textfield-label">数字</label>
                         <input name="num_2" class="mdui-textfield-input" type="number" required/>

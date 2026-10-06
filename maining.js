@@ -3,6 +3,8 @@ function reloadObj(redata,cookie_b){
     full_norepeat = full_data;
     if(cookie_b != false){
         document.cookie = 'data='+full_data+";expires=Fri, 31 Dec 9999 23:59:59 GMT;";
+        data_dirty = true;
+        save_data_to_cloud(full_data);
         }
     section(full_data);
     box = document.getElementById("show-box");
@@ -84,7 +86,7 @@ function getCookie(cname)
 }
 full_data = getCookie("data");
 if(full_data == ''){
-    var full_data = ['大吉','小吉','中吉','凶','大凶'];
+    var full_data = DEFAULT_DATA.slice();
 }
 else{
     var full_data = full_data.split(',');
@@ -352,6 +354,28 @@ function custom_num(){
     reloadObj(num_list,false);
     mdui.snackbar({
         message: '<i class="mdui-icon material-icons">&#xe5ca;</i> 已设置为指定范围',
+        position: 'top'
+    })
+}
+function apply_manual_input(){
+    let input = document.getElementById("manual-input");
+    if(!input) return;
+    let items = input.value.split(/[\n\r,，]/).map(function(item){
+        return item.trim();
+    }).filter(function(item){
+        return item != "";
+    });
+    if(items.length == 0){
+        mdui.snackbar({
+            message: '<i class="mdui-icon material-icons">&#xe001;</i> 请输入至少一个元素',
+            position: 'top'
+        });
+        return
+    }
+    reloadObj(items,true);
+    input.value = '';
+    mdui.snackbar({
+        message: '<i class="mdui-icon material-icons">&#xe5ca;</i> 已应用手动输入的元素',
         position: 'top'
     })
 }
