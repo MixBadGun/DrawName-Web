@@ -65,6 +65,11 @@ chose_audio.src = "sound/chose.mp3"
 var chose2_audio = document.createElement("audio");
 chose2_audio.src = "sound/chose2.mp3"
 passing_audio.loop = true;
+//把音效拉回起点（比 load() 便宜：不会中断并重新解码整个音频）
+function rewind_audio(audio){
+    audio.pause();
+    audio.currentTime = 0;
+}
 //类名
 text_name = "inner-text";
 //拆分名字类
@@ -92,6 +97,9 @@ var times = 0;
 var total_times = 0;
 var show_items = [];
 var draw_list = [];
+//一次抽取的完整揭示计划：每步揭示哪些字符，抽取开始时一次算完，点击时直接取用
+var reveal_plan = [];
+var reveal_step = 0;
 //重建一排展示框，radiate 为真时让方框从中心散开到各自的位置
 function build_boxes(radiate){
     var show_box = document.getElementById("show-box");
@@ -170,6 +178,21 @@ function next_reveal_len(prefix_len){
     }
     return total - prefix_len;
 }
+//把一次抽取的所有揭示步骤预先算出来缓存住：
+//停顿点只取决于当前候选名单，所以每次抽取算一次即可，后续点击不再扫描名单
+function build_reveal_plan(){
+    var plan = [];
+    var total = chosen_name.length;
+    var prefix = 0;
+    while(prefix < total){
+        var count = next_reveal_len(prefix);
+        if(count < 1) count = 1;
+        plan.push({start: prefix, count: count, finish: prefix + count >= total});
+        prefix += count;
+    }
+    reveal_plan = plan;
+    reveal_step = 0;
+}
 //揭示 start 起的 count 个字符：第一个框保留，其余框的字符与其间的空隙一起融入第一个框
 function reveal_chars(start, count, finish){
     if(show_items.length == 0) return;
@@ -181,8 +204,11 @@ function reveal_chars(start, count, finish){
         wrap.className = "merge-wrap";
         first.appendChild(wrap);
     }
+    //已合并部分的右边缘（上一段的空隙可能仍在收敛，取实测值）
     var prev_right = wrap.lastElementChild ? wrap.lastElementChild.getBoundingClientRect().right : null;
-    var gaps = [];
+    var slots = [];
+    var boxes = [];
+    //阶段一（只写 DOM，不测量）：建好节点，先把待测字符塞回它原来所在的框里
     for(var k=start;k<start+count;k++){
         var slot = document.createElement("div");
         slot.className = "merge-slot";
@@ -190,24 +216,49 @@ function reveal_chars(start, count, finish){
         text.className = text_name;
         text.textContent = chosen_name[k] || "";
         slot.appendChild(text);
+        slots.push(slot);
         var step = k > 0 ? show_items[k] : null;
-        //测出该字符原本所在的位置，好让空隙宽度刚好等于它到前一个字符的距离
         if(step){
             step.innerHTML = '';
             step.appendChild(slot);
-            var from_left = slot.getBoundingClientRect().left;
-            wrap.appendChild(slot);
-            step.remove();
-            show_items[k] = null;
-            var gap_box = document.createElement("div");
-            gap_box.className = "merge-gap";
-            gap_box.style.width = (prev_right === null ? 0 : Math.max(0, from_left - prev_right)) + "px";
-            wrap.insertBefore(gap_box, slot);
-            gaps.push(gap_box);
+            boxes.push(step);
         } else {
+            boxes.push(null);
             wrap.appendChild(slot);
         }
-        prev_right = slot.getBoundingClientRect().right;
+    }
+    //阶段二（只读）：一次取回所有字符的原始位置，整批只触发一次重排
+    var lefts = [];
+    var widths = [];
+    for(var m=0;m<slots.length;m++){
+        var rect = slots[m].getBoundingClientRect();
+        lefts.push(rect.left);
+        widths.push(rect.width);
+    }
+    //阶段三（只写）：拆掉旧框，按顺序拼进第一个框，空隙宽度取自阶段二实测的位置
+    for(var n=0;n<boxes.length;n++){
+        if(boxes[n]){
+            boxes[n].remove();
+            show_items[start + n] = null;
+        }
+    }
+    var gaps = [];
+    var cursor = prev_right;
+    for(var p=0;p<slots.length;p++){
+        var cur = slots[p];
+        if(boxes[p]){
+            var gap_width = cursor === null ? 0 : Math.max(0, lefts[p] - cursor);
+            var gap_box = document.createElement("div");
+            gap_box.className = "merge-gap";
+            gap_box.style.width = gap_width + "px";
+            wrap.appendChild(gap_box);
+            gaps.push(gap_box);
+            wrap.appendChild(cur);
+            cursor = (cursor === null ? 0 : cursor) + gap_width + widths[p];
+        } else {
+            //第一个框里的首个字符本来就在最终位置，不需要空隙
+            cursor = lefts[p] + widths[p];
+        }
     }
     if(gaps.length){
         requestAnimationFrame(function(){
@@ -262,6 +313,8 @@ function start_random(){
         random_index = random_i == chose_list.length ? random_i-1 : random_i;
         chosen_name = chose_list[random_index];
         draw_list = chose_list;
+        //名单与结果已确定，此时（滚动动画期间）顺势把整条揭示计划算好
+        build_reveal_plan();
         full_norepeat = chose_list.filter(function(ite){
             return ite != chosen_name
         });
@@ -275,10 +328,8 @@ function start_random(){
             }
         }
         passing_audio.play();
-        chose_audio.pause();
-        chose_audio.load();
-        chose2_audio.pause();
-        chose2_audio.load();
+        rewind_audio(chose_audio);
+        rewind_audio(chose2_audio);
         total_times ++;
     for(var i=0; i<show_items.length; i++){
         gif = document.createElement("div");
@@ -289,15 +340,21 @@ function start_random(){
     };
     times += 1;
     } else {
-        var shown = times - 1;
-        var count = next_reveal_len(shown);
-        if(count < 1){
-            count = 1;
+        //揭示步骤早已算好，这里只按顺序取下一条，不再扫描候选名单
+        var plan_step = reveal_plan[reveal_step];
+        var shown, count, bullon;
+        if(plan_step){
+            shown = plan_step.start;
+            count = plan_step.count;
+            bullon = plan_step.finish;
+            reveal_step++;
+        } else {
+            shown = 0;
+            count = chosen_name.length > 0 ? chosen_name.length : 1;
+            bullon = true;
         }
-        var bullon = shown + count >= chosen_name.length;
         if(bullon){
-            passing_audio.pause();
-            passing_audio.load();
+            rewind_audio(passing_audio);
             chose_audio.play();
             shining = document.getElementById("shining");
             shining.classList.remove("shining")
@@ -318,8 +375,7 @@ function start_random(){
                 );
             }
         else{
-            chose2_audio.pause();
-            chose2_audio.load();
+            rewind_audio(chose2_audio);
             chose2_audio.play();
             reveal_chars(shown, count, false);
             times = shown + count + 1;
