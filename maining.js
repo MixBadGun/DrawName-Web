@@ -7,13 +7,8 @@ function reloadObj(redata,cookie_b){
         save_data_to_cloud(full_data);
         }
     section(full_data);
-    box = document.getElementById("show-box");
-    box.innerHTML='';
-    for(var i=0;i<splitnum;i++){
-        sitem = document.createElement("div");
-        sitem.className="show-item";
-        box.appendChild(sitem);
-    }
+    build_boxes();
+    times = 0;
 }
 
 function excel(obj){
@@ -92,33 +87,153 @@ else{
     var full_data = full_data.split(',');
 };
 var full_norepeat = full_data;
-var namelist=[];
 var splitnum=0;
 var times = 0;
 var total_times = 0;
-function split_name(name) {
-    temp_namelist = [];
-    num = name.length;
-    temp = "";
-    for (var i=0; i<num; i++){
-        temp += name[i];
-        temp_namelist.push(temp);}
-    return temp_namelist;}
+var show_items = [];
+var draw_list = [];
+//重建一排展示框，radiate 为真时让方框从中心散开到各自的位置
+function build_boxes(radiate){
+    var show_box = document.getElementById("show-box");
+    show_box.innerHTML = '';
+    show_items = [];
+    for(var i=0;i<splitnum;i++){
+        var sitem = document.createElement("div");
+        sitem.className = h_info ? "show-item-big" : "show-item";
+        show_box.appendChild(sitem);
+        show_items.push(sitem);
+    }
+    if(radiate){
+        scatter_boxes();
+    }
+}
+//从中心向四周散开，正中那个本来就在中心，不需要动
+function scatter_boxes(){
+    if(show_items.length == 0) return;
+    //以整排方框的中心为起点，避免容器滚动条等带来的偏移
+    var first_rect = show_items[0].getBoundingClientRect();
+    var last_rect = show_items[show_items.length - 1].getBoundingClientRect();
+    var cx = (first_rect.left + last_rect.right) / 2;
+    var cy = first_rect.top + first_rect.height / 2;
+    var mid = (show_items.length - 1) / 2;
+    for(var i=0;i<show_items.length;i++){
+        var el = show_items[i];
+        var rect = el.getBoundingClientRect();
+        var dx = cx - (rect.left + rect.width / 2);
+        var dy = cy - (rect.top + rect.height / 2);
+        if(Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) continue;
+        el.animate([
+            {transform: "translate(" + dx + "px, " + dy + "px)"},
+            {transform: "translate(0px, 0px)"}
+        ], {
+            duration: 500,
+            delay: Math.abs(i - mid) * 20,
+            easing: "cubic-bezier(0.16, 1, 0.3, 1)",
+            fill: "backwards"
+        });
+    }
+}
+//候选项中与当前名字共同拥有的最长前缀长度
+function shared_prefix_len(list, name, prefix_len){
+    var prefix = name.slice(0, prefix_len);
+    var shared = null;
+    for(var i=0;i<list.length;i++){
+        var item = list[i];
+        if(item.slice(0, prefix_len) !== prefix) continue;
+        if(shared === null){
+            shared = item;
+            continue;
+        }
+        var k = 0;
+        while(k < shared.length && k < item.length && shared[k] === item[k]) k++;
+        shared = shared.slice(0, k);
+    }
+    if(shared === null) return name.length;
+    return Math.min(shared.length, name.length);
+}
+//与给定前缀匹配的候选数量
+function match_count(list, prefix){
+    var count = 0;
+    for(var i=0;i<list.length;i++){
+        if(list[i].slice(0, prefix.length) === prefix) count++;
+    }
+    return count;
+}
+//本次可以一次性揭示的字符数：分支之前相同的部分直接推进，只要推进后只剩唯一结果，余下部分也一并展示
+function next_reveal_len(prefix_len){
+    var total = chosen_name.length;
+    if(prefix_len >= total) return 0;
+    var shared = shared_prefix_len(draw_list, chosen_name, prefix_len);
+    var end = shared > prefix_len ? Math.min(shared, total) : prefix_len + 1;
+    if(end < total && match_count(draw_list, chosen_name.slice(0, end)) > 1){
+        return end - prefix_len;
+    }
+    return total - prefix_len;
+}
+//揭示 start 起的 count 个字符：第一个框保留，其余框的字符与其间的空隙一起融入第一个框
+function reveal_chars(start, count, finish){
+    if(show_items.length == 0) return;
+    var first = show_items[0];
+    var wrap = first.querySelector(".merge-wrap");
+    if(!wrap){
+        first.innerHTML = '';
+        wrap = document.createElement("div");
+        wrap.className = "merge-wrap";
+        first.appendChild(wrap);
+    }
+    var prev_right = wrap.lastElementChild ? wrap.lastElementChild.getBoundingClientRect().right : null;
+    var gaps = [];
+    for(var k=start;k<start+count;k++){
+        var slot = document.createElement("div");
+        slot.className = "merge-slot";
+        var text = document.createElement("div");
+        text.className = text_name;
+        text.textContent = chosen_name[k] || "";
+        slot.appendChild(text);
+        var step = k > 0 ? show_items[k] : null;
+        //测出该字符原本所在的位置，好让空隙宽度刚好等于它到前一个字符的距离
+        if(step){
+            step.innerHTML = '';
+            step.appendChild(slot);
+            var from_left = slot.getBoundingClientRect().left;
+            wrap.appendChild(slot);
+            step.remove();
+            show_items[k] = null;
+            var gap_box = document.createElement("div");
+            gap_box.className = "merge-gap";
+            gap_box.style.width = (prev_right === null ? 0 : Math.max(0, from_left - prev_right)) + "px";
+            wrap.insertBefore(gap_box, slot);
+            gaps.push(gap_box);
+        } else {
+            wrap.appendChild(slot);
+        }
+        prev_right = slot.getBoundingClientRect().right;
+    }
+    if(gaps.length){
+        requestAnimationFrame(function(){
+            for(var i=0;i<gaps.length;i++){
+                gaps[i].style.width = "0px";
+            }
+        });
+    }
+    if(finish){
+        for(var k=start+count;k<show_items.length;k++){
+            if(show_items[k]){
+                show_items[k].classList.add("show-item-collapse");
+                show_items[k] = null;
+            }
+        }
+    }
+}
 //划分区域
 function section(data){
     let max = 0;
-    namelist = [];
     for(y in data){
         item = data[y];
         num = item.length;
         max = max < num ? num : max;
-        temp = "";
-        for(var x=0; x<num; x++){
-            temp += item[x];
-            namelist.push(temp)}
     };
     splitnum = max;
-    for (var i=0;i<splitnum;i++){};
     }
 
 var no_repeat = false;
@@ -141,14 +256,12 @@ function ifnorepeat(){
 function start_random(){
     var chose_list = no_repeat ? full_norepeat : full_data;
     if (times==0){
-        box = document.getElementById("show-box");
-        for(var i=0;i<splitnum;i++){
-            hcl = h_info ? "show-item-big" : "show-item";
-            box.children[i].className = hcl;
-        }
+        //上一轮已经揭示过结果时，新一轮的方框从中心散开
+        build_boxes(document.querySelector("#show-box .merge-wrap") !== null);
         random_i = Math.floor(chose_list.length*Math.random());
         random_index = random_i == chose_list.length ? random_i-1 : random_i;
         chosen_name = chose_list[random_index];
+        draw_list = chose_list;
         full_norepeat = chose_list.filter(function(ite){
             return ite != chosen_name
         });
@@ -167,30 +280,21 @@ function start_random(){
         chose2_audio.pause();
         chose2_audio.load();
         total_times ++;
-    for(var i=0; i<splitnum; i++){
+    for(var i=0; i<show_items.length; i++){
         gif = document.createElement("div");
         gif.className = "rolling";
         gif.style = `background-image: url('./image/chose_${(i % 6)}.webp');`
-        box.children[i].innerHTML='';
-        box.children[i].appendChild(gif);
+        show_items[i].innerHTML='';
+        show_items[i].appendChild(gif);
     };
     times += 1;
     } else {
-        bullon = false;
-        random_item = split_name(chosen_name);
-        if (times >= chosen_name.length || times == splitnum){
-            bullon = true;}
-        else{
-            o_num = 0;
-            for(i in namelist){
-                temp = namelist[i];
-                if (temp == random_item[times-1]){
-                    o_num ++;
-                };}
-            if(o_num == 1){
-                bullon = true;
-            };
+        var shown = times - 1;
+        var count = next_reveal_len(shown);
+        if(count < 1){
+            count = 1;
         }
+        var bullon = shown + count >= chosen_name.length;
         if(bullon){
             passing_audio.pause();
             passing_audio.load();
@@ -199,21 +303,7 @@ function start_random(){
             shining.classList.remove("shining")
             void shining.offsetWidth
             shining.classList.add("shining")
-            if(times>0){
-            for(var i=times-1;i<splitnum;i++){
-                step = box.children[i];
-                step.innerHTML='';
-                text = document.createElement("div");
-                text.className = text_name;
-                if(chosen_name[i] != undefined){
-                    text.innerHTML = chosen_name[i];}
-                else{
-                    text.innerHTML = '';
-                    step.className = "show-item-none";
-
-                }
-                step.appendChild(text);
-                    };};
+            reveal_chars(shown, count, true);
             times = 0;
             info = document.createElement("li");
             info.innerHTML = `<div class='times'>${total_times}</div><div class='name'>${chosen_name}</div>`;
@@ -231,13 +321,8 @@ function start_random(){
             chose2_audio.pause();
             chose2_audio.load();
             chose2_audio.play();
-            step = box.children[times-1];
-            step.innerHTML='';
-            text = document.createElement("div");
-            text.className = text_name;
-            text.innerHTML = chosen_name[times-1];
-            step.appendChild(text);
-            times ++;
+            reveal_chars(shown, count, false);
+            times = shown + count + 1;
         }
             }
         }
@@ -245,12 +330,7 @@ function start_random(){
 var present_list = [];
 $(document).ready(function(){
     section(full_data);
-    box = document.getElementById("show-box");
-    for(var i=0;i<splitnum;i++){
-        sitem = document.createElement("div");
-        sitem.className="show-item";
-        box.appendChild(sitem);
-    }
+    build_boxes();
     let present_chose = document.getElementById("presents");
     let j = 0;
     for(let p = 0;p<presentList.length;p++){
@@ -288,10 +368,9 @@ function custom_close(){
 var h_info = false;
 function hide_info(){
     h_info = !h_info;
-    box = document.getElementById("show-box");
-    for(var i=0;i<splitnum;i++){
-        hcl = h_info ? "show-item-big" : "show-item";
-        box.children[i].className = hcl;
+    for(var i=0;i<show_items.length;i++){
+        if(!show_items[i]) continue;
+        show_items[i].className = h_info ? "show-item-big" : "show-item";
     }
     if(h_info) {
         $("#info-out").css("height","0%");

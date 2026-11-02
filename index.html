@@ -61,6 +61,7 @@ body{
 .show-box{
     display: flex;
     justify-content: center;
+    justify-content: safe center;
     width: 100%;
     transition: all 0.5s;
     align-items: center;
@@ -80,6 +81,7 @@ body{
 }
 .show-item{
     display: flex;
+    flex: 0 0 auto;
     min-width: 125px;
     min-height: 125px;
     border-radius: 10px;
@@ -92,6 +94,7 @@ body{
 }
 .show-item-big{
     display: flex;
+    flex: 0 0 auto;
     min-width: 200px;
     min-height: 200px;
     border-radius: 10px;
@@ -102,10 +105,48 @@ body{
     margin: 0 5px;
     border: solid 1px var(--border-color);
 }
-.show-item-none {
-    transition: all 0.5s;
-    min-width: 0;
-    min-height: 0;
+.merge-wrap{
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
+    margin: auto;
+    padding: 0 20px;
+}
+.show-item-big .merge-wrap{
+    padding: 0 32px;
+}
+.merge-slot{
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
+    margin: auto;
+}
+.merge-wrap .merge-slot{
+    margin: 0;
+}
+.merge-slot .inner-text,
+.merge-slot .inner-big-text{
+    margin: 0;
+}
+/*融合时字符之间的空隙，宽度逐渐收缩为 0*/
+.merge-gap{
+    flex: 0 0 auto;
+    width: 0;
+    height: 0;
+    transition: width 0.42s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+/*抽取结束后多余的方框：平滑收缩，不再占用宽度*/
+.show-item-collapse{
+    min-width: 0 !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    border-width: 0 !important;
+    opacity: 0 !important;
+    overflow: hidden;
+    pointer-events: none;
+}
+.show-item-collapse > *{
+    width: 0 !important;
 }
 .inner-text{
     width: fit-content;
@@ -167,6 +208,8 @@ body{
     overflow-y: scroll;
     position: relative;
     transition: all 0.5s;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 24px);
+    mask-image: linear-gradient(to bottom, transparent 0, #000 24px);
 }
 @keyframes info-out{
     from{
@@ -178,7 +221,7 @@ body{
 }
 .info-box ul{
     line-height: 2em;
-    padding: 0 25px;
+    padding: 24px 25px 0;
 }
 .info-box li{
     list-style-type:none;

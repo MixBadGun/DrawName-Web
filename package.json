@@ -1,0 +1,16 @@
+{
+  "name": "drawname-web",
+  "version": "1.0.0",
+  "private": true,
+  "description": "坏枪随机器 6 静态站点，npm run build 生成可部署的 dist",
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "preview": "node build.mjs --serve"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.12",
+    "html-minifier-terser": "^7.2.0",
+    "sharp": "^0.35.5"
+  }
+}
